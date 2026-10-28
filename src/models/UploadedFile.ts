@@ -25,3 +25,4 @@ const UploadedFileSchema = new Schema<IUploadedFile>(
 export const UploadedFile =
   mongoose.models.UploadedFile ||
   mongoose.model<IUploadedFile>("UploadedFile", UploadedFileSchema);
+
