@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { connectToDatabase } from "@/lib/mongodb";
+import { UploadedFile } from "@/models/UploadedFile";
+import mongoose from "mongoose";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,25 +18,34 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Limit size to 5MB
+    // Limit size to 5MB (plenty for PDF resumes / certificates)
     if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "File size exceeds 5MB limit" }, { status: 400 });
+      return NextResponse.json(
+        { error: "File size exceeds 5MB limit" },
+        { status: 400 }
+      );
     }
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadsDir, { recursive: true });
-
-    // Clean filename and make unique
+    // Generate unique filename identifier
     const sanitizedOriginalName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
     const uniqueFileName = `${Date.now()}-${session.userId}-${sanitizedOriginalName}`;
-    const filePath = path.join(uploadsDir, uniqueFileName);
 
-    await writeFile(filePath, buffer);
+    await connectToDatabase();
 
-    const fileUrl = `/uploads/${uniqueFileName}`;
+    await UploadedFile.create({
+      fileName: uniqueFileName,
+      originalName: file.name,
+      mimeType: file.type || "application/pdf",
+      size: file.size,
+      data: buffer,
+      uploadedBy: new mongoose.Types.ObjectId(session.userId),
+    });
+
+    // Universal URL that works anywhere (Vercel serverless, container, local)
+    const fileUrl = `/api/files/${uniqueFileName}`;
 
     return NextResponse.json({
       message: "File uploaded successfully",
