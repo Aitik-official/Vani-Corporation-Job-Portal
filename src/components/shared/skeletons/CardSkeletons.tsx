@@ -163,3 +163,4 @@ export function JobGridSkeleton({ count = 6 }: { count?: number }) {
     </div>
   );
 }
+
