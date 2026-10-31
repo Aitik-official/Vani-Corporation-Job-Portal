@@ -75,5 +75,10 @@ const JobSchema = new Schema<IJob>(
   { timestamps: true }
 );
 
+// High-performance compound indexes for search, listing and recruiter management
+JobSchema.index({ status: 1, createdAt: -1 });
+JobSchema.index({ companyId: 1, status: 1, createdAt: -1 });
+JobSchema.index({ category: 1, status: 1 });
+
 export const Job: Model<IJob> =
   mongoose.models.Job || mongoose.model<IJob>("Job", JobSchema);

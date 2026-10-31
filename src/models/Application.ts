@@ -80,6 +80,15 @@ const ApplicationSchema = new Schema<IApplication>(
 // Compound unique index to strictly prevent duplicate job applications by a student
 ApplicationSchema.index({ studentId: 1, jobId: 1 }, { unique: true });
 
+// Recruiter applicant pipeline filter & sort
+ApplicationSchema.index({ companyId: 1, status: 1, appliedAt: -1 });
+
+// Job-specific applicant list query
+ApplicationSchema.index({ jobId: 1, status: 1, appliedAt: -1 });
+
+// Student dashboard application tracker query
+ApplicationSchema.index({ studentId: 1, appliedAt: -1 });
+
 export const Application: Model<IApplication> =
   mongoose.models.Application ||
   mongoose.model<IApplication>("Application", ApplicationSchema);
