@@ -128,11 +128,11 @@ export default function StudentProfilePage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
-  const [noticePeriod, setNoticePeriod] = useState("Available to join in 15 Days");
+  const [noticePeriod, setNoticePeriod] = useState("Available to join immediately");
   const [headline, setHeadline] = useState("");
   const [profileSummary, setProfileSummary] = useState("");
   const [resumeUrl, setResumeUrl] = useState("");
-  const [resumeName, setResumeName] = useState("Candidate_Resume.pdf");
+  const [resumeName, setResumeName] = useState("");
   const [resumeUpdatedAt, setResumeUpdatedAt] = useState<string>("");
 
   // Key skills
@@ -163,34 +163,30 @@ export default function StudentProfilePage() {
 
   // Career profile
   const [careerProfile, setCareerProfile] = useState<CareerProfile>({
-    industry: "IT Services & Consulting",
-    department: "Engineering - Software & QA",
-    roleCategory: "Software Development",
-    desiredJobType: "Permanent",
-    desiredEmploymentType: "Full Time",
-    preferredRole: "Software Engineer / Full Stack Developer",
-    preferredWorkLocation: ["Mumbai", "Navi Mumbai", "Thane", "Pune"],
-    expectedSalary: "₹3,00,000",
-    preferredShift: "Day",
+    industry: "",
+    department: "",
+    roleCategory: "",
+    desiredJobType: "",
+    desiredEmploymentType: "",
+    preferredRole: "",
+    preferredWorkLocation: [],
+    expectedSalary: "",
+    preferredShift: "",
   });
 
   // Personal details
   const [personalDetails, setPersonalDetails] = useState<PersonalDetails>({
-    gender: "Male",
-    maritalStatus: "Single / Unmarried",
-    dob: "18 Oct 2003",
-    category: "General",
-    address: "Navi Mumbai, Maharashtra, India",
-    pincode: "410206",
-    hometown: "Mumbai",
-    workPermitCountries: ["India"],
-    languages: [
-      { language: "English", proficiency: "Expert", canRead: true, canWrite: true, canSpeak: true },
-      { language: "Hindi", proficiency: "Expert", canRead: true, canWrite: true, canSpeak: true },
-      { language: "Marathi", proficiency: "Proficient", canRead: true, canWrite: true, canSpeak: true },
-    ],
-    differentlyAbled: "Do not have disability",
-    careerBreak: "No",
+    gender: "",
+    maritalStatus: "",
+    dob: "",
+    category: "",
+    address: "",
+    pincode: "",
+    hometown: "",
+    workPermitCountries: [],
+    languages: [],
+    differentlyAbled: "",
+    careerBreak: "",
   });
 
   // Modals for editing sections cleanly
@@ -222,133 +218,65 @@ export default function StudentProfilePage() {
         setName(s.userId?.name || "");
         setEmail(s.userId?.email || "");
         setPhone(s.phone || "");
-        setLocation(s.location || "Mumbai, INDIA");
-        setNoticePeriod(s.noticePeriod || "Available to join in 15 Days");
-        setHeadline(s.headline || "B.Tech ECS 2025 | Aspiring IT Professional | JavaScript, React JS, Node JS, SQL");
-        setProfileSummary(s.profileSummary || "Eager to launch a career as an entry-level Software Engineer in a technology-driven environment. Result-oriented Bachelor of Engineering graduate with a strong foundation in computer science fundamentals and object-oriented programming.");
+        setLocation(s.location || "");
+        setNoticePeriod(s.noticePeriod || "Available to join immediately");
+        setHeadline(s.headline || "");
+        setProfileSummary(s.profileSummary || "");
         setResumeUrl(s.resumeUrl || "");
-        setResumeName(s.resumeName || "Candidate_Resume.pdf");
-        setResumeUpdatedAt(s.resumeUpdatedAt ? new Date(s.resumeUpdatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Aug 26, 2026");
+        setResumeName(s.resumeName || "");
+        setResumeUpdatedAt(s.resumeUpdatedAt ? new Date(s.resumeUpdatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "");
 
         // Skills
-        setSkillsList(s.skills && s.skills.length > 0 ? s.skills : ["Web Development", "Fullstack Web Developer", "Python", "HTML/CSS", "Tailwind CSS", "React.js", "Node.js", "TypeScript", "JavaScript", "AWS", "SQL"]);
+        setSkillsList(Array.isArray(s.skills) ? s.skills : []);
 
         // Employment History
-        if (s.employmentHistory && s.employmentHistory.length > 0) {
-          setEmploymentList(s.employmentHistory);
-        } else {
-          setEmploymentList([
-            {
-              designation: "IT Support - Other",
-              organization: "Noventiq Services India Pvt Ltd",
-              employmentType: "Internship",
-              startDate: "Jan 2025",
-              endDate: "Apr 2025 (4 months)",
-              isCurrent: false,
-              description: "Technical Intern working on infrastructure troubleshooting and system maintenance.",
-            },
-          ]);
-        }
+        setEmploymentList(Array.isArray(s.employmentHistory) ? s.employmentHistory : []);
 
-        // Education List
+        // Education List - populate from educationList or fallback to basic registration degree/college
         if (s.educationList && s.educationList.length > 0) {
           setEducationList(s.educationList);
-        } else {
+        } else if (s.college || s.degree) {
           setEducationList([
             {
-              degree: "B.Tech / B.E. Electronics And Computer Engineering",
+              degree: s.degree || "Degree",
               course: "Full Time",
-              collegeOrSchool: s.college || "Pillai College of Engineering, Navi Mumbai",
-              endYear: 2025,
-              score: "8.4 CGPA",
-            },
-            {
-              degree: "Class XII (HSC)",
-              course: "Science",
-              collegeOrSchool: "Maharashtra State Board",
-              endYear: 2021,
-              score: "78.5%",
-            },
-            {
-              degree: "Class X (SSC)",
-              course: "General",
-              collegeOrSchool: "Maharashtra State Board",
-              endYear: 2019,
-              score: "82.4%",
+              collegeOrSchool: s.college || "",
+              endYear: s.graduationYear || 2026,
+              score: s.cgpa ? `${s.cgpa} CGPA` : "",
             },
           ]);
+        } else {
+          setEducationList([]);
         }
 
         // IT Skills
-        if (s.itSkills && s.itSkills.length > 0) {
-          setItSkillsList(s.itSkills);
-        } else {
-          setItSkillsList([
-            { skill: "JavaScript", version: "ES6+", lastUsed: "2026", experienceYears: 1, experienceMonths: 6 },
-            { skill: "React.js", version: "v18", lastUsed: "2026", experienceYears: 1, experienceMonths: 2 },
-            { skill: "Next.js", version: "v15", lastUsed: "2026", experienceYears: 1, experienceMonths: 0 },
-            { skill: "Node.js", version: "v20", lastUsed: "2026", experienceYears: 1, experienceMonths: 4 },
-            { skill: "Python", version: "v3.12", lastUsed: "2025", experienceYears: 0, experienceMonths: 8 },
-            { skill: "SQL / PostgreSQL", version: "v16", lastUsed: "2026", experienceYears: 1, experienceMonths: 0 },
-          ]);
-        }
+        setItSkillsList(Array.isArray(s.itSkills) ? s.itSkills : []);
 
         // Projects
-        if (s.projectList && s.projectList.length > 0) {
-          setProjectList(s.projectList);
-        } else {
-          setProjectList([
-            {
-              title: "Modern Enterprise Job Portal & Applicant Tracking System",
-              clientOrOrg: "Capstone Project",
-              role: "Fullstack Architect",
-              startDate: "Jan 2026",
-              endDate: "Present",
-              description: "Architected a dual-sided candidate and recruiter placement ecosystem with Next.js 15, MongoDB Mongoose models, role-based JWT auth, real-time interview scheduling, and instant .ics calendar exports.",
-            },
-            {
-              title: "Distributed File Management & Cloud Archival Engine",
-              clientOrOrg: "Independent Project",
-              role: "Backend Engineer",
-              startDate: "Aug 2025",
-              endDate: "Dec 2025",
-              description: "Engineered secure multipart chunk upload handling, automatic thumbnail and PDF preview generators, and role-based ACL permissions.",
-            },
-          ]);
-        }
+        setProjectList(Array.isArray(s.projectList) ? s.projectList : []);
 
         // Accomplishments
         if (s.accomplishments) {
-          setAccomplishments(s.accomplishments);
+          setAccomplishments({
+            onlineProfiles: Array.isArray(s.accomplishments.onlineProfiles) ? s.accomplishments.onlineProfiles : [],
+            workSamples: Array.isArray(s.accomplishments.workSamples) ? s.accomplishments.workSamples : [],
+            publications: Array.isArray(s.accomplishments.publications) ? s.accomplishments.publications : [],
+            presentations: Array.isArray(s.accomplishments.presentations) ? s.accomplishments.presentations : [],
+            patents: Array.isArray(s.accomplishments.patents) ? s.accomplishments.patents : [],
+            certifications: Array.isArray(s.accomplishments.certifications) ? s.accomplishments.certifications : [],
+          });
         } else {
           setAccomplishments({
-            onlineProfiles: [
-              { platform: "LinkedIn", url: "https://linkedin.com/in/student-profile" },
-              { platform: "GitHub", url: "https://github.com/developer-candidate" },
-            ],
+            onlineProfiles: [],
             workSamples: [],
             publications: [],
             presentations: [],
             patents: [],
-            certifications: [
-              {
-                title: "Blockchain Basics & Smart Contracts",
-                provider: "Cyfrin Updraft",
-                url: "https://updraft.cyfrin.io",
-                validFrom: "Jul 2025",
-                validTo: "Jul 2027",
-              },
-              {
-                title: "AWS Cloud Foundations",
-                provider: "Amazon Web Services",
-                url: "https://aws.training",
-                validFrom: "Jan 2025",
-                validTo: "Jan 2028",
-              },
-            ],
+            certifications: [],
           });
         }
 
+        // Career Profile & Personal Details
         // Career Profile & Personal Details
         if (s.careerProfile) setCareerProfile(s.careerProfile);
         if (s.personalDetails) setPersonalDetails(s.personalDetails);
@@ -567,23 +495,23 @@ export default function StudentProfilePage() {
           <span className="text-xs text-slate-400 hidden sm:inline">Supported: PDF format up to 5 MB</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-blue-50/40 dark:bg-slate-950 border border-blue-200/70 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 dark:bg-blue-600/20 dark:text-blue-400 flex items-center justify-center font-bold text-sm">
-              PDF
-            </div>
-            <div>
-              <div className="font-bold text-slate-900 dark:text-white text-sm">
-                {resumeName || "Candidate_Resume.pdf"}
+        {resumeUrl ? (
+          <div className="p-4 rounded-2xl bg-blue-50/40 dark:bg-slate-950 border border-blue-200/70 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 dark:bg-blue-600/20 dark:text-blue-400 flex items-center justify-center font-bold text-sm">
+                PDF
               </div>
-              <div className="text-xs text-slate-500 mt-0.5">
-                Uploaded on {resumeUpdatedAt || "Recently"}
+              <div>
+                <div className="font-bold text-slate-900 dark:text-white text-sm">
+                  {resumeName || "Uploaded_Resume.pdf"}
+                </div>
+                <div className="text-xs text-slate-500 mt-0.5">
+                  Uploaded on {resumeUpdatedAt || "Recently"}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            {resumeUrl && (
+            <div className="flex items-center gap-3">
               <a
                 href={resumeUrl}
                 download
@@ -594,15 +522,47 @@ export default function StudentProfilePage() {
                 <Download className="w-3.5 h-3.5" />
                 <span>Download</span>
               </a>
-            )}
 
-            <label className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition shadow-xs">
+              <label className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition shadow-xs">
+                {uploadingResume ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Upload className="w-3.5 h-3.5" />
+                )}
+                <span>{uploadingResume ? "Uploading..." : "Upload New Resume"}</span>
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleResumeUpload}
+                  disabled={uploadingResume}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+        ) : (
+          <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold text-sm">
+                PDF
+              </div>
+              <div>
+                <div className="font-bold text-slate-900 dark:text-white text-sm">
+                  No resume uploaded yet
+                </div>
+                <div className="text-xs text-slate-500 mt-0.5">
+                  Upload your CV in PDF format so recruiters can review your full background
+                </div>
+              </div>
+            </div>
+
+            <label className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-2 cursor-pointer transition shadow-xs">
               {uploadingResume ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                <Upload className="w-3.5 h-3.5" />
+                <Upload className="w-4 h-4" />
               )}
-              <span>{uploadingResume ? "Uploading..." : "Upload New Resume"}</span>
+              <span>{uploadingResume ? "Uploading..." : "Upload Resume (PDF)"}</span>
               <input
                 type="file"
                 accept=".pdf"
@@ -612,7 +572,7 @@ export default function StudentProfilePage() {
               />
             </label>
           </div>
-        </div>
+        )}
       </div>
 
       {/* 3. RESUME HEADLINE (Amber Card) */}
@@ -752,58 +712,82 @@ export default function StudentProfilePage() {
           </button>
         </div>
 
-        <div className="space-y-3">
-          {employmentList.map((emp, index) => (
-            <div
-              key={index}
-              className="p-5 rounded-2xl bg-violet-50/30 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800 space-y-2 relative"
+        {employmentList.length === 0 ? (
+          <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-800 text-center space-y-2">
+            <p className="text-xs text-slate-500 font-medium">No employment or internship experience added yet.</p>
+            <button
+              type="button"
+              onClick={() => {
+                setEditEmpData({
+                  designation: "",
+                  organization: "",
+                  employmentType: "Internship",
+                  startDate: "",
+                  endDate: "",
+                  description: "",
+                });
+                setEditingItemIndex(null);
+                setActiveModal("employment");
+              }}
+              className="text-xs font-bold text-violet-600 dark:text-violet-400 hover:underline"
             >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
-                    <span>{emp.designation}</span>
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-violet-100 text-violet-700 dark:bg-violet-900/60 dark:text-violet-300">
-                      {emp.employmentType || "Internship"}
-                    </span>
-                  </h4>
-                  <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mt-1">
-                    {emp.organization}
-                  </p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    {emp.startDate} to {emp.endDate}
-                  </p>
+              + Add your first internship / job
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {employmentList.map((emp, index) => (
+              <div
+                key={index}
+                className="p-5 rounded-2xl bg-violet-50/30 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800 space-y-2 relative"
+              >
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                      <span>{emp.designation}</span>
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-violet-100 text-violet-700 dark:bg-violet-900/60 dark:text-violet-300">
+                        {emp.employmentType || "Internship"}
+                      </span>
+                    </h4>
+                    <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mt-1">
+                      {emp.organization}
+                    </p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      {emp.startDate} to {emp.endDate}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditEmpData({ ...emp });
+                        setEditingItemIndex(index);
+                        setActiveModal("employment");
+                      }}
+                      className="text-slate-400 hover:text-indigo-600 transition p-1"
+                      title="Edit employment"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEmploymentList(employmentList.filter((_, i) => i !== index))}
+                      className="text-slate-400 hover:text-rose-500 transition p-1"
+                      title="Delete employment"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditEmpData({ ...emp });
-                      setEditingItemIndex(index);
-                      setActiveModal("employment");
-                    }}
-                    className="text-slate-400 hover:text-indigo-600 transition p-1"
-                    title="Edit employment"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEmploymentList(employmentList.filter((_, i) => i !== index))}
-                    className="text-slate-400 hover:text-rose-500 transition p-1"
-                    title="Delete employment"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                {emp.description && (
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed pt-2 border-t border-violet-100 dark:border-slate-800">
+                    {emp.description}
+                  </p>
+                )}
               </div>
-              {emp.description && (
-                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed pt-2 border-t border-violet-100 dark:border-slate-800">
-                  {emp.description}
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 6. EDUCATION (Indigo Card) */}
@@ -832,53 +816,70 @@ export default function StudentProfilePage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-          {educationList.map((edu, idx) => (
-            <div
-              key={idx}
-              className="p-4 rounded-2xl bg-indigo-50/30 dark:bg-slate-950 border border-indigo-200/60 dark:border-slate-800 flex flex-col justify-between gap-3 relative group"
+        {educationList.length === 0 ? (
+          <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-800 text-center space-y-2">
+            <p className="text-xs text-slate-500 font-medium">No education details added yet.</p>
+            <button
+              type="button"
+              onClick={() => {
+                setEditEduData({ degree: "", course: "Full Time", collegeOrSchool: "", endYear: 2026, score: "" });
+                setEditingItemIndex(null);
+                setActiveModal("education");
+              }}
+              className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
             >
-              <div>
-                <div className="flex items-start justify-between gap-1">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">
-                    {edu.degree}
-                  </h4>
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditEduData({ ...edu });
-                        setEditingItemIndex(idx);
-                        setActiveModal("education");
-                      }}
-                      className="text-slate-400 hover:text-indigo-600 transition p-0.5"
-                    >
-                      <Edit2 className="w-3 h-3" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setEducationList(educationList.filter((_, i) => i !== idx))}
-                      className="text-slate-400 hover:text-rose-500 transition p-0.5"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+              + Add degree or schooling
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            {educationList.map((edu, idx) => (
+              <div
+                key={idx}
+                className="p-4 rounded-2xl bg-indigo-50/30 dark:bg-slate-950 border border-indigo-200/60 dark:border-slate-800 flex flex-col justify-between gap-3 relative group"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-1">
+                    <h4 className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">
+                      {edu.degree}
+                    </h4>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditEduData({ ...edu });
+                          setEditingItemIndex(idx);
+                          setActiveModal("education");
+                        }}
+                        className="text-slate-400 hover:text-indigo-600 transition p-0.5"
+                      >
+                        <Edit2 className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEducationList(educationList.filter((_, i) => i !== idx))}
+                        className="text-slate-400 hover:text-rose-500 transition p-0.5"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 line-clamp-2">
+                    {edu.collegeOrSchool}
+                  </p>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 line-clamp-2">
-                  {edu.collegeOrSchool}
-                </p>
+                <div className="flex items-center justify-between pt-2 border-t border-indigo-100 dark:border-slate-800 text-[11px]">
+                  <span className="text-slate-500 font-medium">Batch {edu.endYear}</span>
+                  {edu.score && (
+                    <span className="font-bold text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
+                      {edu.score}
+                    </span>
+                  )}
+                </div>
               </div>
-              <div className="flex items-center justify-between pt-2 border-t border-indigo-100 dark:border-slate-800 text-[11px]">
-                <span className="text-slate-500 font-medium">Batch {edu.endYear}</span>
-                {edu.score && (
-                  <span className="font-bold text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
-                    {edu.score}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 7. IT SKILLS MATRIX (Cyan/Teal Card) */}
@@ -907,53 +908,70 @@ export default function StudentProfilePage() {
           </button>
         </div>
 
-        <div className="overflow-x-auto no-scrollbar rounded-2xl border border-teal-200/60 dark:border-slate-800">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-teal-50/50 dark:bg-slate-950 text-slate-700 dark:text-slate-300">
-              <tr className="border-b border-teal-200/60 dark:border-slate-800">
-                <th className="px-4 py-3 font-bold">Skills</th>
-                <th className="px-4 py-3 font-bold">Version</th>
-                <th className="px-4 py-3 font-bold">Last used</th>
-                <th className="px-4 py-3 font-bold">Experience</th>
-                <th className="px-4 py-3 text-right font-bold">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-teal-100 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
-              {itSkillsList.map((item, idx) => (
-                <tr key={idx} className="hover:bg-teal-50/30 dark:hover:bg-slate-800/30">
-                  <td className="px-4 py-3 font-bold text-slate-900 dark:text-white">{item.skill}</td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{item.version || "-"}</td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{item.lastUsed || "2026"}</td>
-                  <td className="px-4 py-3 text-teal-800 dark:text-teal-300 font-semibold">
-                    {item.experienceYears || 0} Year {item.experienceMonths || 0} Month
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditItSkillData({ ...item });
-                          setEditingItemIndex(idx);
-                          setActiveModal("itSkill");
-                        }}
-                        className="text-slate-400 hover:text-teal-600 transition p-1"
-                      >
-                        <Edit2 className="w-3.5 h-3.5 inline" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setItSkillsList(itSkillsList.filter((_, i) => i !== idx))}
-                        className="text-slate-400 hover:text-rose-500 transition p-1"
-                      >
-                        <Trash2 className="w-3.5 h-3.5 inline" />
-                      </button>
-                    </div>
-                  </td>
+        {itSkillsList.length === 0 ? (
+          <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-800 text-center space-y-2">
+            <p className="text-xs text-slate-500 font-medium">No technical IT skills matrix added yet.</p>
+            <button
+              type="button"
+              onClick={() => {
+                setEditItSkillData({ skill: "", version: "", lastUsed: "2026", experienceYears: 1, experienceMonths: 0 });
+                setEditingItemIndex(null);
+                setActiveModal("itSkill");
+              }}
+              className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline"
+            >
+              + Add your primary programming languages & tools
+            </button>
+          </div>
+        ) : (
+          <div className="overflow-x-auto no-scrollbar rounded-2xl border border-teal-200/60 dark:border-slate-800">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-teal-50/50 dark:bg-slate-950 text-slate-700 dark:text-slate-300">
+                <tr className="border-b border-teal-200/60 dark:border-slate-800">
+                  <th className="px-4 py-3 font-bold">Skills</th>
+                  <th className="px-4 py-3 font-bold">Version</th>
+                  <th className="px-4 py-3 font-bold">Last used</th>
+                  <th className="px-4 py-3 font-bold">Experience</th>
+                  <th className="px-4 py-3 text-right font-bold">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-teal-100 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
+                {itSkillsList.map((item, idx) => (
+                  <tr key={idx} className="hover:bg-teal-50/30 dark:hover:bg-slate-800/30">
+                    <td className="px-4 py-3 font-bold text-slate-900 dark:text-white">{item.skill}</td>
+                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{item.version || "-"}</td>
+                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{item.lastUsed || "2026"}</td>
+                    <td className="px-4 py-3 text-teal-800 dark:text-teal-300 font-semibold">
+                      {item.experienceYears || 0} Year {item.experienceMonths || 0} Month
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditItSkillData({ ...item });
+                            setEditingItemIndex(idx);
+                            setActiveModal("itSkill");
+                          }}
+                          className="text-slate-400 hover:text-teal-600 transition p-1"
+                        >
+                          <Edit2 className="w-3.5 h-3.5 inline" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setItSkillsList(itSkillsList.filter((_, i) => i !== idx))}
+                          className="text-slate-400 hover:text-rose-500 transition p-1"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 inline" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* 8. PROJECTS (Blue/Sky Card) */}
@@ -982,54 +1000,71 @@ export default function StudentProfilePage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {projectList.map((proj, idx) => (
-            <div
-              key={idx}
-              className="p-5 rounded-2xl bg-sky-50/30 dark:bg-slate-950 border border-sky-200/60 dark:border-slate-800 flex flex-col justify-between gap-3"
+        {projectList.length === 0 ? (
+          <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-800 text-center space-y-2">
+            <p className="text-xs text-slate-500 font-medium">No projects added yet.</p>
+            <button
+              type="button"
+              onClick={() => {
+                setEditProjectData({ title: "", clientOrOrg: "", role: "", startDate: "", endDate: "", description: "" });
+                setEditingItemIndex(null);
+                setActiveModal("project");
+              }}
+              className="text-xs font-bold text-sky-600 dark:text-sky-400 hover:underline"
             >
-              <div>
-                <div className="flex items-start justify-between gap-2">
-                  <h4 className="font-bold text-slate-900 dark:text-white text-sm">
-                    {proj.title}
-                  </h4>
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditProjectData({ ...proj });
-                        setEditingItemIndex(idx);
-                        setActiveModal("project");
-                      }}
-                      className="text-slate-400 hover:text-sky-600 transition p-1"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setProjectList(projectList.filter((_, i) => i !== idx))}
-                      className="text-slate-400 hover:text-rose-500 transition p-1"
-                      title="Remove project"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+              + Add your capstone, coursework, or open source project
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {projectList.map((proj, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-sky-50/30 dark:bg-slate-950 border border-sky-200/60 dark:border-slate-800 flex flex-col justify-between gap-3"
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-2">
+                    <h4 className="font-bold text-slate-900 dark:text-white text-sm">
+                      {proj.title}
+                    </h4>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditProjectData({ ...proj });
+                          setEditingItemIndex(idx);
+                          setActiveModal("project");
+                        }}
+                        className="text-slate-400 hover:text-sky-600 transition p-1"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setProjectList(projectList.filter((_, i) => i !== idx))}
+                        className="text-slate-400 hover:text-rose-500 transition p-1"
+                        title="Remove project"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-                {proj.clientOrOrg && (
-                  <p className="text-xs font-semibold text-sky-700 dark:text-sky-300 mt-0.5">
-                    {proj.clientOrOrg} {proj.role ? `• ${proj.role}` : ""}
+                  {proj.clientOrOrg && (
+                    <p className="text-xs font-semibold text-sky-700 dark:text-sky-300 mt-0.5">
+                      {proj.clientOrOrg} {proj.role ? `• ${proj.role}` : ""}
+                    </p>
+                  )}
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    {proj.startDate} to {proj.endDate || "Present"}
                   </p>
-                )}
-                <p className="text-[11px] text-slate-500 mt-0.5">
-                  {proj.startDate} to {proj.endDate || "Present"}
-                </p>
-                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed pt-2 border-t border-sky-100 dark:border-slate-800 mt-2">
-                  {proj.description}
-                </p>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed pt-2 border-t border-sky-100 dark:border-slate-800 mt-2">
+                    {proj.description}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 9. PROFILE SUMMARY (Rose Card) */}
@@ -1087,28 +1122,32 @@ export default function StudentProfilePage() {
                 </button>
               </div>
               <p className="text-[11px] text-slate-500 mt-0.5">LinkedIn, GitHub, Behance and portfolios</p>
-              <div className="space-y-2 mt-3">
-                {accomplishments.onlineProfiles?.map((p, i) => (
-                  <div key={i} className="flex items-center justify-between text-xs bg-white dark:bg-slate-900 p-2 rounded-xl border border-amber-200/60 dark:border-slate-800">
-                    <a href={p.url} target="_blank" rel="noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline font-mono flex items-center gap-1 truncate mr-2">
-                      <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span className="truncate">{p.platform}: {p.url}</span>
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAccomplishments({
-                          ...accomplishments,
-                          onlineProfiles: accomplishments.onlineProfiles?.filter((_, index) => index !== i),
-                        });
-                      }}
-                      className="text-slate-400 hover:text-rose-500 p-0.5"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+              {accomplishments.onlineProfiles && accomplishments.onlineProfiles.length > 0 ? (
+                <div className="space-y-2 mt-3">
+                  {accomplishments.onlineProfiles.map((p, i) => (
+                    <div key={i} className="flex items-center justify-between text-xs bg-white dark:bg-slate-900 p-2 rounded-xl border border-amber-200/60 dark:border-slate-800">
+                      <a href={p.url} target="_blank" rel="noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline font-mono flex items-center gap-1 truncate mr-2">
+                        <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <span className="truncate">{p.platform}: {p.url}</span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAccomplishments({
+                            ...accomplishments,
+                            onlineProfiles: accomplishments.onlineProfiles?.filter((_, index) => index !== i),
+                          });
+                        }}
+                        className="text-slate-400 hover:text-rose-500 p-0.5"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[11px] text-slate-400 italic mt-3">No profile links added yet.</p>
+              )}
             </div>
           </div>
 
@@ -1129,28 +1168,32 @@ export default function StudentProfilePage() {
                 </button>
               </div>
               <p className="text-[11px] text-slate-500 mt-0.5">Formal examinations and accredited technical certifications</p>
-              <div className="space-y-2 mt-3">
-                {accomplishments.certifications?.map((c, i) => (
-                  <div key={i} className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-slate-800 flex items-center justify-between">
-                    <div>
-                      <div className="font-bold text-xs text-slate-900 dark:text-white">{c.title}</div>
-                      <div className="text-[11px] text-slate-500">{c.provider} • Validity: {c.validFrom} to {c.validTo}</div>
+              {accomplishments.certifications && accomplishments.certifications.length > 0 ? (
+                <div className="space-y-2 mt-3">
+                  {accomplishments.certifications.map((c, i) => (
+                    <div key={i} className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-slate-800 flex items-center justify-between">
+                      <div>
+                        <div className="font-bold text-xs text-slate-900 dark:text-white">{c.title}</div>
+                        <div className="text-[11px] text-slate-500">{c.provider} • Validity: {c.validFrom} to {c.validTo}</div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAccomplishments({
+                            ...accomplishments,
+                            certifications: accomplishments.certifications?.filter((_, index) => index !== i),
+                          });
+                        }}
+                        className="text-slate-400 hover:text-rose-500 p-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setAccomplishments({
-                          ...accomplishments,
-                          certifications: accomplishments.certifications?.filter((_, index) => index !== i),
-                        });
-                      }}
-                      className="text-slate-400 hover:text-rose-500 p-1"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[11px] text-slate-400 italic mt-3">No certifications added yet.</p>
+              )}
             </div>
           </div>
         </div>
@@ -1208,27 +1251,27 @@ export default function StudentProfilePage() {
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div className="p-3 rounded-xl bg-violet-50/40 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800">
               <div className="text-slate-500 font-medium">Industry</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.industry || "IT Services"}</div>
+              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.industry || "Not specified"}</div>
             </div>
             <div className="p-3 rounded-xl bg-violet-50/40 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800">
               <div className="text-slate-500 font-medium">Department</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.department || "Engineering"}</div>
+              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.department || "Not specified"}</div>
             </div>
             <div className="p-3 rounded-xl bg-violet-50/40 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800">
               <div className="text-slate-500 font-medium">Desired Job Type</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.desiredJobType || "Permanent"}</div>
+              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.desiredJobType || "Not specified"}</div>
             </div>
             <div className="p-3 rounded-xl bg-violet-50/40 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800">
               <div className="text-slate-500 font-medium">Employment Type</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.desiredEmploymentType || "Full Time"}</div>
+              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.desiredEmploymentType || "Not specified"}</div>
             </div>
             <div className="p-3 rounded-xl bg-violet-50/40 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800">
               <div className="text-slate-500 font-medium">Preferred Locations</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.preferredWorkLocation?.join(", ") || "Mumbai, Navi Mumbai"}</div>
+              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.preferredWorkLocation && careerProfile.preferredWorkLocation.length > 0 ? careerProfile.preferredWorkLocation.join(", ") : "Not specified"}</div>
             </div>
             <div className="p-3 rounded-xl bg-violet-50/40 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800">
               <div className="text-slate-500 font-medium">Expected Salary</div>
-              <div className="font-bold text-emerald-700 dark:text-emerald-400 mt-0.5">{careerProfile.expectedSalary || "₹3,00,000"}</div>
+              <div className="font-bold text-emerald-700 dark:text-emerald-400 mt-0.5">{careerProfile.expectedSalary || "Not specified"}</div>
             </div>
           </div>
         </div>
@@ -1261,19 +1304,19 @@ export default function StudentProfilePage() {
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div className="p-3 rounded-xl bg-indigo-50/40 dark:bg-slate-950 border border-indigo-200/60 dark:border-slate-800">
               <div className="text-slate-500 font-medium">Gender & Status</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{personalDetails.gender}, {personalDetails.maritalStatus}</div>
+              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{personalDetails.gender || "Not set"}{personalDetails.maritalStatus ? `, ${personalDetails.maritalStatus}` : ""}</div>
             </div>
             <div className="p-3 rounded-xl bg-indigo-50/40 dark:bg-slate-950 border border-indigo-200/60 dark:border-slate-800">
               <div className="text-slate-500 font-medium">Date of Birth</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{personalDetails.dob || "18 Oct 2003"}</div>
+              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{personalDetails.dob || "Not set"}</div>
             </div>
             <div className="p-3 rounded-xl bg-indigo-50/40 dark:bg-slate-950 border border-indigo-200/60 dark:border-slate-800">
               <div className="text-slate-500 font-medium">Hometown</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{personalDetails.hometown || "Mumbai"}</div>
+              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{personalDetails.hometown || "Not set"}</div>
             </div>
             <div className="p-3 rounded-xl bg-indigo-50/40 dark:bg-slate-950 border border-indigo-200/60 dark:border-slate-800">
               <div className="text-slate-500 font-medium">Work Permit</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{personalDetails.workPermitCountries?.join(", ") || "India"}</div>
+              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{personalDetails.workPermitCountries && personalDetails.workPermitCountries.length > 0 ? personalDetails.workPermitCountries.join(", ") : "Not set"}</div>
             </div>
           </div>
 
@@ -1291,45 +1334,49 @@ export default function StudentProfilePage() {
                 + Add Language
               </button>
             </div>
-            <div className="overflow-x-auto no-scrollbar rounded-xl border border-indigo-200/60 dark:border-slate-800">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-indigo-50/50 dark:bg-slate-950 text-slate-700 dark:text-slate-300">
-                  <tr className="border-b border-indigo-200/60 dark:border-slate-800">
-                    <th className="px-3 py-2 font-bold">Languages</th>
-                    <th className="px-3 py-2 font-bold">Proficiency</th>
-                    <th className="px-3 py-2 text-center font-bold">Read</th>
-                    <th className="px-3 py-2 text-center font-bold">Write</th>
-                    <th className="px-3 py-2 text-center font-bold">Speak</th>
-                    <th className="px-3 py-2 text-right font-bold">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-indigo-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
-                  {personalDetails.languages?.map((lang, i) => (
-                    <tr key={i}>
-                      <td className="px-3 py-2 font-bold text-slate-900 dark:text-white">{lang.language}</td>
-                      <td className="px-3 py-2 text-slate-600 dark:text-slate-300 font-medium">{lang.proficiency}</td>
-                      <td className="px-3 py-2 text-center text-emerald-600 font-bold">{lang.canRead ? "✓" : "-"}</td>
-                      <td className="px-3 py-2 text-center text-emerald-600 font-bold">{lang.canWrite ? "✓" : "-"}</td>
-                      <td className="px-3 py-2 text-center text-emerald-600 font-bold">{lang.canSpeak ? "✓" : "-"}</td>
-                      <td className="px-3 py-2 text-right">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPersonalDetails({
-                              ...personalDetails,
-                              languages: personalDetails.languages?.filter((_, index) => index !== i),
-                            });
-                          }}
-                          className="text-slate-400 hover:text-rose-500 p-0.5"
-                        >
-                          <Trash2 className="w-3.5 h-3.5 inline" />
-                        </button>
-                      </td>
+            {personalDetails.languages && personalDetails.languages.length > 0 ? (
+              <div className="overflow-x-auto no-scrollbar rounded-xl border border-indigo-200/60 dark:border-slate-800">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-indigo-50/50 dark:bg-slate-950 text-slate-700 dark:text-slate-300">
+                    <tr className="border-b border-indigo-200/60 dark:border-slate-800">
+                      <th className="px-3 py-2 font-bold">Languages</th>
+                      <th className="px-3 py-2 font-bold">Proficiency</th>
+                      <th className="px-3 py-2 text-center font-bold">Read</th>
+                      <th className="px-3 py-2 text-center font-bold">Write</th>
+                      <th className="px-3 py-2 text-center font-bold">Speak</th>
+                      <th className="px-3 py-2 text-right font-bold">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-indigo-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
+                    {personalDetails.languages.map((lang, i) => (
+                      <tr key={i}>
+                        <td className="px-3 py-2 font-bold text-slate-900 dark:text-white">{lang.language}</td>
+                        <td className="px-3 py-2 text-slate-600 dark:text-slate-300 font-medium">{lang.proficiency}</td>
+                        <td className="px-3 py-2 text-center text-emerald-600 font-bold">{lang.canRead ? "✓" : "-"}</td>
+                        <td className="px-3 py-2 text-center text-emerald-600 font-bold">{lang.canWrite ? "✓" : "-"}</td>
+                        <td className="px-3 py-2 text-center text-emerald-600 font-bold">{lang.canSpeak ? "✓" : "-"}</td>
+                        <td className="px-3 py-2 text-right">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPersonalDetails({
+                                ...personalDetails,
+                                languages: personalDetails.languages?.filter((_, index) => index !== i),
+                              });
+                            }}
+                            className="text-slate-400 hover:text-rose-500 p-0.5"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 inline" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-[11px] text-slate-400 italic">No languages added yet.</p>
+            )}
           </div>
         </div>
       </div>
