@@ -17,6 +17,7 @@ import {
   X
 } from "lucide-react";
 import BookmarkButton from "@/components/student/BookmarkButton";
+import { JobCardSkeleton } from "@/components/shared/skeletons/CardSkeletons";
 
 interface JobItem {
   _id: string;
@@ -224,8 +225,10 @@ export default function StudentJobsPage() {
 
       {/* Job Grid / List */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <JobCardSkeleton key={i} />
+          ))}
         </div>
       ) : jobs.length === 0 ? (
         <div className="rounded-3xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 p-12 text-center shadow-sm">

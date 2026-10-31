@@ -25,6 +25,7 @@ import { ProfileSkills } from "@/components/student/profile/ProfileSkills";
 import { ProfileExperience } from "@/components/student/profile/ProfileExperience";
 import { ProfileProjects } from "@/components/student/profile/ProfileProjects";
 import { ProfilePersonal } from "@/components/student/profile/ProfilePersonal";
+import { ProfileSkeleton } from "@/components/shared/skeletons/CardSkeletons";
 
 export default function StudentProfilePage() {
   const [loading, setLoading] = useState(true);
@@ -302,11 +303,7 @@ export default function StudentProfilePage() {
   const completeness = calculateCompleteness();
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   return (

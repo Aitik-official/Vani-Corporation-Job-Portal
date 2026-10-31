@@ -29,6 +29,7 @@ import {
 import { toast } from "sonner";
 import { exportApplicantsToCsv, ExportApplicantData } from "@/lib/csvExport";
 import { downloadIcsCalendar, getGoogleCalendarUrl } from "@/lib/calendar";
+import { TableRowSkeleton } from "@/components/shared/skeletons/CardSkeletons";
 
 export interface InterviewDetails {
   scheduledAt: string;
@@ -570,9 +571,10 @@ export default function CompanyApplicantsPage() {
 
       {/* Main View Area */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-24 bg-slate-900/40 rounded-2xl border border-slate-800">
-          <Loader2 className="w-8 h-8 animate-spin text-violet-500 mb-3" />
-          <p className="text-xs text-slate-400">Loading candidate pipelines...</p>
+        <div className="space-y-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <TableRowSkeleton key={i} />
+          ))}
         </div>
       ) : applicants.length === 0 ? (
         <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-12 text-center">

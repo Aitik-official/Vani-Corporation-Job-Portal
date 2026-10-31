@@ -13,6 +13,7 @@ import {
   Briefcase 
 } from "lucide-react";
 import BookmarkButton from "@/components/student/BookmarkButton";
+import { JobCardSkeleton } from "@/components/shared/skeletons/CardSkeletons";
 
 interface SavedJobItem {
   _id: string;
@@ -82,8 +83,10 @@ export default function StudentSavedJobsPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20 bg-slate-900/40 rounded-2xl border border-slate-800">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <JobCardSkeleton key={i} />
+          ))}
         </div>
       ) : savedJobs.length === 0 ? (
         <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-12 text-center">

@@ -19,6 +19,7 @@ import {
   Pencil
 } from "lucide-react";
 import { toast } from "sonner";
+import { TableRowSkeleton } from "@/components/shared/skeletons/CardSkeletons";
 
 interface JobItem {
   _id: string;
@@ -161,8 +162,10 @@ export default function CompanyJobsPage() {
       )}
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
+        <div className="space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <TableRowSkeleton key={i} />
+          ))}
         </div>
       ) : jobs.length === 0 ? (
         <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-12 text-center">
