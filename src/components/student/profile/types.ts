@@ -80,3 +80,4 @@ export interface PersonalDetails {
   differentlyAbled?: string;
   careerBreak?: string;
 }
+
