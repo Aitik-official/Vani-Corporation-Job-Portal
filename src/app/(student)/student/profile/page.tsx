@@ -2,121 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { 
-  User, 
-  GraduationCap, 
-  Briefcase, 
-  Upload, 
-  FileText, 
-  MapPin, 
   Save, 
   Loader2, 
-  CheckCircle2,
-  ExternalLink,
-  Edit2,
-  Plus,
-  Trash2,
-  Phone,
-  Mail,
-  Calendar,
   Sparkles,
-  Award,
-  BookOpen,
-  Code2,
-  Globe,
-  Layers,
-  HeartHandshake,
-  Download,
-  Building2,
-  FileCheck,
-  Languages,
-  BadgeCheck,
   X,
   Check
 } from "lucide-react";
 import { toast } from "sonner";
-
-interface EmploymentItem {
-  designation: string;
-  organization: string;
-  employmentType?: string;
-  startDate?: string;
-  endDate?: string;
-  isCurrent?: boolean;
-  description?: string;
-}
-
-interface EducationItem {
-  degree: string;
-  course?: string;
-  collegeOrSchool: string;
-  boardOrUniversity?: string;
-  startYear?: number;
-  endYear: number;
-  gradingSystem?: string;
-  score?: string;
-}
-
-interface ITSkillItem {
-  skill: string;
-  version?: string;
-  lastUsed?: string;
-  experienceYears?: number;
-  experienceMonths?: number;
-}
-
-interface ProjectItem {
-  title: string;
-  clientOrOrg?: string;
-  role?: string;
-  startDate?: string;
-  endDate?: string;
-  isOngoing?: boolean;
-  projectUrl?: string;
-  description: string;
-}
-
-interface Accomplishments {
-  onlineProfiles?: { platform: string; url: string }[];
-  workSamples?: { title: string; url: string; description?: string }[];
-  publications?: { title: string; url?: string; description?: string }[];
-  presentations?: { title: string; url?: string; description?: string }[];
-  patents?: { title: string; issueNumber?: string; url?: string; description?: string }[];
-  certifications?: { title: string; provider: string; url?: string; validFrom?: string; validTo?: string }[];
-}
-
-interface CareerProfile {
-  industry?: string;
-  department?: string;
-  roleCategory?: string;
-  desiredJobType?: string;
-  desiredEmploymentType?: string;
-  preferredRole?: string;
-  preferredWorkLocation?: string[];
-  expectedSalary?: string;
-  preferredShift?: string;
-}
-
-interface LanguageItem {
-  language: string;
-  proficiency: "Beginner" | "Proficient" | "Expert";
-  canRead: boolean;
-  canWrite: boolean;
-  canSpeak: boolean;
-}
-
-interface PersonalDetails {
-  gender?: string;
-  maritalStatus?: string;
-  dob?: string;
-  category?: string;
-  address?: string;
-  pincode?: string;
-  hometown?: string;
-  workPermitCountries?: string[];
-  languages?: LanguageItem[];
-  differentlyAbled?: string;
-  careerBreak?: string;
-}
+import {
+  EmploymentItem,
+  EducationItem,
+  ITSkillItem,
+  ProjectItem,
+  Accomplishments,
+  CareerProfile,
+  LanguageItem,
+  PersonalDetails,
+} from "@/components/student/profile/types";
+import { ProfileHero } from "@/components/student/profile/ProfileHero";
+import { ProfileResume } from "@/components/student/profile/ProfileResume";
+import { ProfileSkills } from "@/components/student/profile/ProfileSkills";
+import { ProfileExperience } from "@/components/student/profile/ProfileExperience";
+import { ProfileProjects } from "@/components/student/profile/ProfileProjects";
+import { ProfilePersonal } from "@/components/student/profile/ProfilePersonal";
 
 export default function StudentProfilePage() {
   const [loading, setLoading] = useState(true);
@@ -403,801 +311,137 @@ export default function StudentProfilePage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-20">
-      {/* 1. TOP IDENTITY & HERO CARD */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-          <div className="flex items-start gap-5">
-            <div className="w-20 h-20 rounded-2xl bg-indigo-600 text-white font-extrabold text-3xl flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0">
-              {name ? name[0] : "C"}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                  {name || "Student Name"}
-                </h1>
-                <button
-                  onClick={() => {
-                    setEditHeroData({ name, phone, location, noticePeriod });
-                    setActiveModal("hero");
-                  }}
-                  className="p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400 transition"
-                  title="Edit Identity & Contact"
-                >
-                  <Edit2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-              <p className="text-xs text-slate-400 mt-1">
-                Profile last updated — {resumeUpdatedAt || "Recently"}
-              </p>
+      {/* 1. HERO IDENTITY CARD */}
+      <ProfileHero
+        name={name}
+        phone={phone}
+        email={email}
+        location={location}
+        noticePeriod={noticePeriod}
+        resumeUpdatedAt={resumeUpdatedAt}
+        completeness={completeness}
+        saving={saving}
+        onEditHero={() => {
+          setEditHeroData({ name, phone, location, noticePeriod });
+          setActiveModal("hero");
+        }}
+        onSaveAll={handleSaveAll}
+      />
 
-              <div className="flex flex-wrap items-center gap-4 mt-3 text-xs">
-                <span className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-200">
-                  <MapPin className="w-4 h-4 text-rose-500" />
-                  <span>{location || "Location not set"}</span>
-                </span>
-                <span className="text-slate-300 dark:text-slate-700">•</span>
-                <span className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-200">
-                  <Phone className="w-4 h-4 text-emerald-600" />
-                  <span>{phone || "Add Phone"}</span>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 inline" />
-                </span>
-                <span className="text-slate-300 dark:text-slate-700">•</span>
-                <span className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-200">
-                  <Mail className="w-4 h-4 text-blue-600" />
-                  <span>{email}</span>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 inline" />
-                </span>
-              </div>
+      {/* 2 & 3. RESUME & HEADLINE */}
+      <ProfileResume
+        resumeUrl={resumeUrl}
+        resumeName={resumeName}
+        resumeUpdatedAt={resumeUpdatedAt}
+        uploadingResume={uploadingResume}
+        headline={headline}
+        setHeadline={setHeadline}
+        onUploadResume={handleResumeUpload}
+      />
 
-              <div className="flex flex-wrap items-center gap-2.5 mt-4">
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
-                  Fresher
-                </span>
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20">
-                  {noticePeriod}
-                </span>
-              </div>
-            </div>
-          </div>
+      {/* 4 & 7. KEY SKILLS & IT SKILLS MATRIX */}
+      <ProfileSkills
+        skillsList={skillsList}
+        newSkillInput={newSkillInput}
+        setNewSkillInput={setNewSkillInput}
+        onAddSkill={handleAddSkill}
+        onRemoveSkill={handleRemoveSkill}
+        onQuickAddSkill={(skill) => setSkillsList([...skillsList, skill])}
+        itSkillsList={itSkillsList}
+        onOpenAddItSkill={() => {
+          setEditItSkillData({ skill: "", version: "", lastUsed: "2026", experienceYears: 1, experienceMonths: 0 });
+          setEditingItemIndex(null);
+          setActiveModal("itSkill");
+        }}
+        onEditItSkill={(idx) => {
+          setEditItSkillData({ ...itSkillsList[idx] });
+          setEditingItemIndex(idx);
+          setActiveModal("itSkill");
+        }}
+        onDeleteItSkill={(idx) => {
+          setItSkillsList(itSkillsList.filter((_, i) => i !== idx));
+        }}
+      />
 
-          <div className="flex flex-col sm:items-end gap-3 shrink-0">
-            <div className="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-500/10 px-4 py-2 rounded-2xl border border-indigo-200 dark:border-indigo-500/20">
-              <Sparkles className="w-4 h-4 text-indigo-600" />
-              <span className="text-xs font-extrabold text-indigo-700 dark:text-indigo-400">
-                {completeness}% Placement Ready
-              </span>
-            </div>
+      {/* 5 & 6. EMPLOYMENT HISTORY & EDUCATION TIMELINE */}
+      <ProfileExperience
+        employmentList={employmentList}
+        onOpenAddEmployment={() => {
+          setEditEmpData({
+            designation: "",
+            organization: "",
+            employmentType: "Internship",
+            startDate: "",
+            endDate: "",
+            description: "",
+          });
+          setEditingItemIndex(null);
+          setActiveModal("employment");
+        }}
+        onEditEmployment={(idx) => {
+          setEditEmpData({ ...employmentList[idx] });
+          setEditingItemIndex(idx);
+          setActiveModal("employment");
+        }}
+        onDeleteEmployment={(idx) => {
+          setEmploymentList(employmentList.filter((_, i) => i !== idx));
+        }}
+        educationList={educationList}
+        onOpenAddEducation={() => {
+          setEditEduData({ degree: "", course: "Full Time", collegeOrSchool: "", endYear: 2026, score: "" });
+          setEditingItemIndex(null);
+          setActiveModal("education");
+        }}
+        onEditEducation={(idx) => {
+          setEditEduData({ ...educationList[idx] });
+          setEditingItemIndex(idx);
+          setActiveModal("education");
+        }}
+        onDeleteEducation={(idx) => {
+          setEducationList(educationList.filter((_, i) => i !== idx));
+        }}
+      />
 
-            <button
-              onClick={handleSaveAll}
-              disabled={saving}
-              className="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-sm transition disabled:opacity-50"
-            >
-              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              <span>{saving ? "Saving Changes..." : "Save All Details"}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. RESUME SECTION (Vibrant Blue Card) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-600/10 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center">
-              <FileText className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-base">Resume</h3>
-              <p className="text-[11px] text-slate-500">Recruiters review this document when screening your job applications</p>
-            </div>
-          </div>
-          <span className="text-xs text-slate-400 hidden sm:inline">Supported: PDF format up to 5 MB</span>
-        </div>
-
-        {resumeUrl ? (
-          <div className="p-4 rounded-2xl bg-blue-50/40 dark:bg-slate-950 border border-blue-200/70 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 dark:bg-blue-600/20 dark:text-blue-400 flex items-center justify-center font-bold text-sm">
-                PDF
-              </div>
-              <div>
-                <div className="font-bold text-slate-900 dark:text-white text-sm">
-                  {resumeName || "Uploaded_Resume.pdf"}
-                </div>
-                <div className="text-xs text-slate-500 mt-0.5">
-                  Uploaded on {resumeUpdatedAt || "Recently"}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <a
-                href={resumeUrl}
-                download
-                target="_blank"
-                rel="noreferrer"
-                className="px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Download</span>
-              </a>
-
-              <label className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition shadow-xs">
-                {uploadingResume ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Upload className="w-3.5 h-3.5" />
-                )}
-                <span>{uploadingResume ? "Uploading..." : "Upload New Resume"}</span>
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleResumeUpload}
-                  disabled={uploadingResume}
-                  className="hidden"
-                />
-              </label>
-            </div>
-          </div>
-        ) : (
-          <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold text-sm">
-                PDF
-              </div>
-              <div>
-                <div className="font-bold text-slate-900 dark:text-white text-sm">
-                  No resume uploaded yet
-                </div>
-                <div className="text-xs text-slate-500 mt-0.5">
-                  Upload your CV in PDF format so recruiters can review your full background
-                </div>
-              </div>
-            </div>
-
-            <label className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-2 cursor-pointer transition shadow-xs">
-              {uploadingResume ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Upload className="w-4 h-4" />
-              )}
-              <span>{uploadingResume ? "Uploading..." : "Upload Resume (PDF)"}</span>
-              <input
-                type="file"
-                accept=".pdf"
-                onChange={handleResumeUpload}
-                disabled={uploadingResume}
-                className="hidden"
-              />
-            </label>
-          </div>
-        )}
-      </div>
-
-      {/* 3. RESUME HEADLINE (Amber Card) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-sm space-y-3">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-600/10 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20 flex items-center justify-center">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-base">Resume headline</h3>
-              <p className="text-[11px] text-slate-500">Concise 1-line professional tagline that appears right beneath your name</p>
-            </div>
-          </div>
-        </div>
-
-        <textarea
-          rows={2}
-          value={headline}
-          onChange={(e) => setHeadline(e.target.value)}
-          placeholder="e.g. B.Tech ECS 2025 | Completed 4-Month Intern | Aspiring IT Professional | JavaScript, React JS, Node JS, SQL"
-          className="w-full px-4 py-3 rounded-2xl bg-amber-50/30 dark:bg-slate-950 border border-amber-200/80 dark:border-slate-700 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:border-amber-500 transition leading-relaxed"
-        />
-      </div>
-
-      {/* 4. KEY SKILLS (Emerald Card) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 flex items-center justify-center">
-              <Code2 className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-base">Key skills</h3>
-              <p className="text-[11px] text-slate-500">Verified core competencies matched against employer job requirements</p>
-            </div>
-          </div>
-          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            {skillsList.length} skills listed
-          </span>
-        </div>
-
-        <div className="flex flex-wrap gap-2 pt-1">
-          {skillsList.map((skill) => (
-            <span
-              key={skill}
-              className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20 flex items-center gap-2 group shadow-xs"
-            >
-              <span>{skill}</span>
-              <button
-                onClick={() => handleRemoveSkill(skill)}
-                className="text-emerald-500 hover:text-rose-500 transition font-bold"
-                title="Remove skill"
-              >
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2 pt-2">
-          <input
-            type="text"
-            value={newSkillInput}
-            onChange={(e) => setNewSkillInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleAddSkill();
-              }
-            }}
-            placeholder="Add new skill (e.g. Next.js, Docker, MongoDB) and press Enter"
-            className="flex-1 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-emerald-500 transition"
-          />
-          <button
-            type="button"
-            onClick={handleAddSkill}
-            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition shadow-xs"
-          >
-            + Add Skill
-          </button>
-        </div>
-
-        {/* In-Demand Skill Suggestions */}
-        <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex flex-wrap items-center gap-1.5 text-xs">
-          <span className="text-[11px] font-semibold text-slate-400 mr-1 flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-emerald-500" />
-            <span>Suggested:</span>
-          </span>
-          {["Docker", "Tailwind CSS", "TypeScript", "PostgreSQL", "Next.js", "Redis", "Git", "REST APIs", "AWS"].map((sugg) => {
-            const alreadyHas = skillsList.includes(sugg);
-            if (alreadyHas) return null;
-            return (
-              <button
-                key={sugg}
-                type="button"
-                onClick={() => setSkillsList([...skillsList, sugg])}
-                className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/40 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400 border border-slate-200 hover:border-emerald-300 dark:border-slate-700 text-[11px] font-semibold transition"
-              >
-                + {sugg}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 5. EMPLOYMENT & INTERNSHIPS (Violet Card) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-violet-50 dark:bg-violet-600/10 text-violet-600 dark:text-violet-400 border border-violet-200 dark:border-violet-500/20 flex items-center justify-center">
-              <Briefcase className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-base">Employment & Internships</h3>
-              <p className="text-[11px] text-slate-500">Corporate work engagements, traineeships, and apprenticeship tenures</p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setEditEmpData({
-                designation: "",
-                organization: "",
-                employmentType: "Internship",
-                startDate: "",
-                endDate: "",
-                description: "",
-              });
-              setEditingItemIndex(null);
-              setActiveModal("employment");
-            }}
-            className="px-3.5 py-1.5 rounded-xl bg-violet-50 hover:bg-violet-100 dark:bg-violet-950 dark:hover:bg-violet-900 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800 text-xs font-bold flex items-center gap-1 transition"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add employment</span>
-          </button>
-        </div>
-
-        {employmentList.length === 0 ? (
-          <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-800 text-center space-y-2">
-            <p className="text-xs text-slate-500 font-medium">No employment or internship experience added yet.</p>
-            <button
-              type="button"
-              onClick={() => {
-                setEditEmpData({
-                  designation: "",
-                  organization: "",
-                  employmentType: "Internship",
-                  startDate: "",
-                  endDate: "",
-                  description: "",
-                });
-                setEditingItemIndex(null);
-                setActiveModal("employment");
-              }}
-              className="text-xs font-bold text-violet-600 dark:text-violet-400 hover:underline"
-            >
-              + Add your first internship / job
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {employmentList.map((emp, index) => (
-              <div
-                key={index}
-                className="p-5 rounded-2xl bg-violet-50/30 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800 space-y-2 relative"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
-                      <span>{emp.designation}</span>
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-violet-100 text-violet-700 dark:bg-violet-900/60 dark:text-violet-300">
-                        {emp.employmentType || "Internship"}
-                      </span>
-                    </h4>
-                    <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mt-1">
-                      {emp.organization}
-                    </p>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      {emp.startDate} to {emp.endDate}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditEmpData({ ...emp });
-                        setEditingItemIndex(index);
-                        setActiveModal("employment");
-                      }}
-                      className="text-slate-400 hover:text-indigo-600 transition p-1"
-                      title="Edit employment"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setEmploymentList(employmentList.filter((_, i) => i !== index))}
-                      className="text-slate-400 hover:text-rose-500 transition p-1"
-                      title="Delete employment"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-                {emp.description && (
-                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed pt-2 border-t border-violet-100 dark:border-slate-800">
-                    {emp.description}
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 6. EDUCATION (Indigo Card) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-center">
-              <GraduationCap className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-base">Education</h3>
-              <p className="text-[11px] text-slate-500">Degree, college/university, Class XII and Class X academic credentials</p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setEditEduData({ degree: "", course: "Full Time", collegeOrSchool: "", endYear: 2026, score: "" });
-              setEditingItemIndex(null);
-              setActiveModal("education");
-            }}
-            className="px-3.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold flex items-center gap-1 transition"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add education</span>
-          </button>
-        </div>
-
-        {educationList.length === 0 ? (
-          <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-800 text-center space-y-2">
-            <p className="text-xs text-slate-500 font-medium">No education details added yet.</p>
-            <button
-              type="button"
-              onClick={() => {
-                setEditEduData({ degree: "", course: "Full Time", collegeOrSchool: "", endYear: 2026, score: "" });
-                setEditingItemIndex(null);
-                setActiveModal("education");
-              }}
-              className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
-            >
-              + Add degree or schooling
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-            {educationList.map((edu, idx) => (
-              <div
-                key={idx}
-                className="p-4 rounded-2xl bg-indigo-50/30 dark:bg-slate-950 border border-indigo-200/60 dark:border-slate-800 flex flex-col justify-between gap-3 relative group"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-1">
-                    <h4 className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">
-                      {edu.degree}
-                    </h4>
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditEduData({ ...edu });
-                          setEditingItemIndex(idx);
-                          setActiveModal("education");
-                        }}
-                        className="text-slate-400 hover:text-indigo-600 transition p-0.5"
-                      >
-                        <Edit2 className="w-3 h-3" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setEducationList(educationList.filter((_, i) => i !== idx))}
-                        className="text-slate-400 hover:text-rose-500 transition p-0.5"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 line-clamp-2">
-                    {edu.collegeOrSchool}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between pt-2 border-t border-indigo-100 dark:border-slate-800 text-[11px]">
-                  <span className="text-slate-500 font-medium">Batch {edu.endYear}</span>
-                  {edu.score && (
-                    <span className="font-bold text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
-                      {edu.score}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 7. IT SKILLS MATRIX (Cyan/Teal Card) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-teal-50 dark:bg-teal-600/10 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-500/20 flex items-center justify-center">
-              <Layers className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-base">IT skills</h3>
-              <p className="text-[11px] text-slate-500">Technical versions, recency of usage, and total active experience</p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setEditItSkillData({ skill: "", version: "", lastUsed: "2026", experienceYears: 1, experienceMonths: 0 });
-              setEditingItemIndex(null);
-              setActiveModal("itSkill");
-            }}
-            className="px-3.5 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 dark:bg-teal-950 dark:hover:bg-teal-900 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800 text-xs font-bold flex items-center gap-1 transition"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add skill row</span>
-          </button>
-        </div>
-
-        {itSkillsList.length === 0 ? (
-          <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-800 text-center space-y-2">
-            <p className="text-xs text-slate-500 font-medium">No technical IT skills matrix added yet.</p>
-            <button
-              type="button"
-              onClick={() => {
-                setEditItSkillData({ skill: "", version: "", lastUsed: "2026", experienceYears: 1, experienceMonths: 0 });
-                setEditingItemIndex(null);
-                setActiveModal("itSkill");
-              }}
-              className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline"
-            >
-              + Add your primary programming languages & tools
-            </button>
-          </div>
-        ) : (
-          <div className="overflow-x-auto no-scrollbar rounded-2xl border border-teal-200/60 dark:border-slate-800">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-teal-50/50 dark:bg-slate-950 text-slate-700 dark:text-slate-300">
-                <tr className="border-b border-teal-200/60 dark:border-slate-800">
-                  <th className="px-4 py-3 font-bold">Skills</th>
-                  <th className="px-4 py-3 font-bold">Version</th>
-                  <th className="px-4 py-3 font-bold">Last used</th>
-                  <th className="px-4 py-3 font-bold">Experience</th>
-                  <th className="px-4 py-3 text-right font-bold">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-teal-100 dark:divide-slate-800/60 bg-white dark:bg-slate-900">
-                {itSkillsList.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-teal-50/30 dark:hover:bg-slate-800/30">
-                    <td className="px-4 py-3 font-bold text-slate-900 dark:text-white">{item.skill}</td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{item.version || "-"}</td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{item.lastUsed || "2026"}</td>
-                    <td className="px-4 py-3 text-teal-800 dark:text-teal-300 font-semibold">
-                      {item.experienceYears || 0} Year {item.experienceMonths || 0} Month
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditItSkillData({ ...item });
-                            setEditingItemIndex(idx);
-                            setActiveModal("itSkill");
-                          }}
-                          className="text-slate-400 hover:text-teal-600 transition p-1"
-                        >
-                          <Edit2 className="w-3.5 h-3.5 inline" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setItSkillsList(itSkillsList.filter((_, i) => i !== idx))}
-                          className="text-slate-400 hover:text-rose-500 transition p-1"
-                        >
-                          <Trash2 className="w-3.5 h-3.5 inline" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {/* 8. PROJECTS (Blue/Sky Card) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-600/10 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-500/20 flex items-center justify-center">
-              <Code2 className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-base">Projects</h3>
-              <p className="text-[11px] text-slate-500">Software systems, capstone prototypes, and production code repositories</p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setEditProjectData({ title: "", clientOrOrg: "", role: "", startDate: "", endDate: "", description: "" });
-              setEditingItemIndex(null);
-              setActiveModal("project");
-            }}
-            className="px-3.5 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 dark:bg-sky-950 dark:hover:bg-sky-900 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 text-xs font-bold flex items-center gap-1 transition"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add project</span>
-          </button>
-        </div>
-
-        {projectList.length === 0 ? (
-          <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-800 text-center space-y-2">
-            <p className="text-xs text-slate-500 font-medium">No projects added yet.</p>
-            <button
-              type="button"
-              onClick={() => {
-                setEditProjectData({ title: "", clientOrOrg: "", role: "", startDate: "", endDate: "", description: "" });
-                setEditingItemIndex(null);
-                setActiveModal("project");
-              }}
-              className="text-xs font-bold text-sky-600 dark:text-sky-400 hover:underline"
-            >
-              + Add your capstone, coursework, or open source project
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {projectList.map((proj, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-2xl bg-sky-50/30 dark:bg-slate-950 border border-sky-200/60 dark:border-slate-800 flex flex-col justify-between gap-3"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-2">
-                    <h4 className="font-bold text-slate-900 dark:text-white text-sm">
-                      {proj.title}
-                    </h4>
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditProjectData({ ...proj });
-                          setEditingItemIndex(idx);
-                          setActiveModal("project");
-                        }}
-                        className="text-slate-400 hover:text-sky-600 transition p-1"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setProjectList(projectList.filter((_, i) => i !== idx))}
-                        className="text-slate-400 hover:text-rose-500 transition p-1"
-                        title="Remove project"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                  {proj.clientOrOrg && (
-                    <p className="text-xs font-semibold text-sky-700 dark:text-sky-300 mt-0.5">
-                      {proj.clientOrOrg} {proj.role ? `• ${proj.role}` : ""}
-                    </p>
-                  )}
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    {proj.startDate} to {proj.endDate || "Present"}
-                  </p>
-                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed pt-2 border-t border-sky-100 dark:border-slate-800 mt-2">
-                    {proj.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 9. PROFILE SUMMARY (Rose Card) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-sm space-y-3">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-600/10 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 flex items-center justify-center">
-              <BookOpen className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-base">Profile summary</h3>
-              <p className="text-[11px] text-slate-500">Comprehensive overview of career goals, strengths, and professional direction</p>
-            </div>
-          </div>
-        </div>
-
-        <textarea
-          rows={3}
-          value={profileSummary}
-          onChange={(e) => setProfileSummary(e.target.value)}
-          placeholder="Eager to launch a career as an entry-level Software Engineer..."
-          className="w-full px-4 py-3 rounded-2xl bg-rose-50/30 dark:bg-slate-950 border border-rose-200/80 dark:border-slate-700 text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:border-rose-500 transition leading-relaxed"
-        />
-      </div>
-
-      {/* 10. ACCOMPLISHMENTS & CERTIFICATIONS (Amber / Gold Card) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-sm space-y-4">
-        <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-600/10 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20 flex items-center justify-center">
-              <Award className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-base">Accomplishments & Certifications</h3>
-              <p className="text-[11px] text-slate-500">Online handles, portfolio links, and accredited technical certifications</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Online profiles */}
-          <div className="p-4 rounded-2xl bg-amber-50/40 dark:bg-slate-950 border border-amber-200/70 dark:border-slate-800 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between">
-                <h4 className="font-bold text-xs text-slate-900 dark:text-white">Online Profiles & Links</h4>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditOnlineProfile({ platform: "LinkedIn", url: "" });
-                    setActiveModal("onlineProfile");
-                  }}
-                  className="text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline"
-                >
-                  + Add Link
-                </button>
-              </div>
-              <p className="text-[11px] text-slate-500 mt-0.5">LinkedIn, GitHub, Behance and portfolios</p>
-              {accomplishments.onlineProfiles && accomplishments.onlineProfiles.length > 0 ? (
-                <div className="space-y-2 mt-3">
-                  {accomplishments.onlineProfiles.map((p, i) => (
-                    <div key={i} className="flex items-center justify-between text-xs bg-white dark:bg-slate-900 p-2 rounded-xl border border-amber-200/60 dark:border-slate-800">
-                      <a href={p.url} target="_blank" rel="noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline font-mono flex items-center gap-1 truncate mr-2">
-                        <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        <span className="truncate">{p.platform}: {p.url}</span>
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAccomplishments({
-                            ...accomplishments,
-                            onlineProfiles: accomplishments.onlineProfiles?.filter((_, index) => index !== i),
-                          });
-                        }}
-                        className="text-slate-400 hover:text-rose-500 p-0.5"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-[11px] text-slate-400 italic mt-3">No profile links added yet.</p>
-              )}
-            </div>
-          </div>
-
-          {/* Certifications */}
-          <div className="p-4 rounded-2xl bg-amber-50/40 dark:bg-slate-950 border border-amber-200/70 dark:border-slate-800 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between">
-                <h4 className="font-bold text-xs text-slate-900 dark:text-white">Verified Certifications</h4>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditCertData({ title: "", provider: "", url: "", validFrom: "", validTo: "" });
-                    setActiveModal("certification");
-                  }}
-                  className="text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline"
-                >
-                  + Add Cert
-                </button>
-              </div>
-              <p className="text-[11px] text-slate-500 mt-0.5">Formal examinations and accredited technical certifications</p>
-              {accomplishments.certifications && accomplishments.certifications.length > 0 ? (
-                <div className="space-y-2 mt-3">
-                  {accomplishments.certifications.map((c, i) => (
-                    <div key={i} className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-slate-800 flex items-center justify-between">
-                      <div>
-                        <div className="font-bold text-xs text-slate-900 dark:text-white">{c.title}</div>
-                        <div className="text-[11px] text-slate-500">{c.provider} • Validity: {c.validFrom} to {c.validTo}</div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAccomplishments({
-                            ...accomplishments,
-                            certifications: accomplishments.certifications?.filter((_, index) => index !== i),
-                          });
-                        }}
-                        className="text-slate-400 hover:text-rose-500 p-1"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-[11px] text-slate-400 italic mt-3">No certifications added yet.</p>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* 8, 9 & 10. PROJECTS, SUMMARY & ACCOMPLISHMENTS */}
+      <ProfileProjects
+        projectList={projectList}
+        onOpenAddProject={() => {
+          setEditProjectData({ title: "", clientOrOrg: "", role: "", startDate: "", endDate: "", description: "" });
+          setEditingItemIndex(null);
+          setActiveModal("project");
+        }}
+        onEditProject={(idx) => {
+          setEditProjectData({ ...projectList[idx] });
+          setEditingItemIndex(idx);
+          setActiveModal("project");
+        }}
+        onDeleteProject={(idx) => {
+          setProjectList(projectList.filter((_, i) => i !== idx));
+        }}
+        profileSummary={profileSummary}
+        setProfileSummary={setProfileSummary}
+        accomplishments={accomplishments}
+        onOpenAddOnlineProfile={() => {
+          setEditOnlineProfile({ platform: "LinkedIn", url: "" });
+          setActiveModal("onlineProfile");
+        }}
+        onDeleteOnlineProfile={(idx) => {
+          setAccomplishments({
+            ...accomplishments,
+            onlineProfiles: accomplishments.onlineProfiles?.filter((_, index) => index !== idx),
+          });
+        }}
+        onOpenAddCert={() => {
+          setEditCertData({ title: "", provider: "", url: "", validFrom: "", validTo: "" });
+          setActiveModal("certification");
+        }}
+        onDeleteCert={(idx) => {
+          setAccomplishments({
+            ...accomplishments,
+            certifications: accomplishments.certifications?.filter((_, index) => index !== idx),
+          });
+        }}
+      />
 
       {/* FLOATING ACTION BAR: Always reachable Save & Completeness Pill */}
       <div className="fixed bottom-6 right-6 lg:left-72 lg:right-12 z-20 flex items-center justify-between p-3.5 sm:px-6 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-xl transition-all">
@@ -1221,165 +465,29 @@ export default function StudentProfilePage() {
         </button>
       </div>
 
-      {/* 11. CAREER PROFILE & PERSONAL DETAILS (Split 50/50 Card) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Career Profile */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-900/40 dark:text-violet-400 border border-violet-200 flex items-center justify-center">
-                <Briefcase className="w-4 h-4" />
-              </div>
-              <div>
-                <h3 className="font-bold text-slate-900 dark:text-white text-base">Career profile</h3>
-                <p className="text-[11px] text-slate-500">Your preferences for hiring roles, job types, and compensation</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setEditCareerData({ ...careerProfile });
-                setActiveModal("career");
-              }}
-              className="p-1.5 rounded-lg bg-violet-50 hover:bg-violet-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-violet-600 dark:text-violet-400 transition"
-              title="Edit Career Preferences"
-            >
-              <Edit2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="p-3 rounded-xl bg-violet-50/40 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800">
-              <div className="text-slate-500 font-medium">Industry</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.industry || "Not specified"}</div>
-            </div>
-            <div className="p-3 rounded-xl bg-violet-50/40 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800">
-              <div className="text-slate-500 font-medium">Department</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.department || "Not specified"}</div>
-            </div>
-            <div className="p-3 rounded-xl bg-violet-50/40 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800">
-              <div className="text-slate-500 font-medium">Desired Job Type</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.desiredJobType || "Not specified"}</div>
-            </div>
-            <div className="p-3 rounded-xl bg-violet-50/40 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800">
-              <div className="text-slate-500 font-medium">Employment Type</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.desiredEmploymentType || "Not specified"}</div>
-            </div>
-            <div className="p-3 rounded-xl bg-violet-50/40 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800">
-              <div className="text-slate-500 font-medium">Preferred Locations</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{careerProfile.preferredWorkLocation && careerProfile.preferredWorkLocation.length > 0 ? careerProfile.preferredWorkLocation.join(", ") : "Not specified"}</div>
-            </div>
-            <div className="p-3 rounded-xl bg-violet-50/40 dark:bg-slate-950 border border-violet-200/60 dark:border-slate-800">
-              <div className="text-slate-500 font-medium">Expected Salary</div>
-              <div className="font-bold text-emerald-700 dark:text-emerald-400 mt-0.5">{careerProfile.expectedSalary || "Not specified"}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Personal Details & Languages */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-200 flex items-center justify-center">
-                <User className="w-4 h-4" />
-              </div>
-              <div>
-                <h3 className="font-bold text-slate-900 dark:text-white text-base">Personal details & Languages</h3>
-                <p className="text-[11px] text-slate-500">Demographic details, home address, and language proficiencies</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setEditPersonalData({ ...personalDetails });
-                setActiveModal("personal");
-              }}
-              className="p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400 transition"
-              title="Edit Personal Information"
-            >
-              <Edit2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="p-3 rounded-xl bg-indigo-50/40 dark:bg-slate-950 border border-indigo-200/60 dark:border-slate-800">
-              <div className="text-slate-500 font-medium">Gender & Status</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{personalDetails.gender || "Not set"}{personalDetails.maritalStatus ? `, ${personalDetails.maritalStatus}` : ""}</div>
-            </div>
-            <div className="p-3 rounded-xl bg-indigo-50/40 dark:bg-slate-950 border border-indigo-200/60 dark:border-slate-800">
-              <div className="text-slate-500 font-medium">Date of Birth</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{personalDetails.dob || "Not set"}</div>
-            </div>
-            <div className="p-3 rounded-xl bg-indigo-50/40 dark:bg-slate-950 border border-indigo-200/60 dark:border-slate-800">
-              <div className="text-slate-500 font-medium">Hometown</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{personalDetails.hometown || "Not set"}</div>
-            </div>
-            <div className="p-3 rounded-xl bg-indigo-50/40 dark:bg-slate-950 border border-indigo-200/60 dark:border-slate-800">
-              <div className="text-slate-500 font-medium">Work Permit</div>
-              <div className="font-bold text-slate-900 dark:text-white mt-0.5">{personalDetails.workPermitCountries && personalDetails.workPermitCountries.length > 0 ? personalDetails.workPermitCountries.join(", ") : "Not set"}</div>
-            </div>
-          </div>
-
-          <div className="pt-2">
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="font-bold text-xs text-slate-900 dark:text-white">Languages Known</h4>
-              <button
-                type="button"
-                onClick={() => {
-                  setNewLangData({ language: "", proficiency: "Proficient", canRead: true, canWrite: true, canSpeak: true });
-                  setActiveModal("language");
-                }}
-                className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
-              >
-                + Add Language
-              </button>
-            </div>
-            {personalDetails.languages && personalDetails.languages.length > 0 ? (
-              <div className="overflow-x-auto no-scrollbar rounded-xl border border-indigo-200/60 dark:border-slate-800">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-indigo-50/50 dark:bg-slate-950 text-slate-700 dark:text-slate-300">
-                    <tr className="border-b border-indigo-200/60 dark:border-slate-800">
-                      <th className="px-3 py-2 font-bold">Languages</th>
-                      <th className="px-3 py-2 font-bold">Proficiency</th>
-                      <th className="px-3 py-2 text-center font-bold">Read</th>
-                      <th className="px-3 py-2 text-center font-bold">Write</th>
-                      <th className="px-3 py-2 text-center font-bold">Speak</th>
-                      <th className="px-3 py-2 text-right font-bold">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-indigo-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
-                    {personalDetails.languages.map((lang, i) => (
-                      <tr key={i}>
-                        <td className="px-3 py-2 font-bold text-slate-900 dark:text-white">{lang.language}</td>
-                        <td className="px-3 py-2 text-slate-600 dark:text-slate-300 font-medium">{lang.proficiency}</td>
-                        <td className="px-3 py-2 text-center text-emerald-600 font-bold">{lang.canRead ? "✓" : "-"}</td>
-                        <td className="px-3 py-2 text-center text-emerald-600 font-bold">{lang.canWrite ? "✓" : "-"}</td>
-                        <td className="px-3 py-2 text-center text-emerald-600 font-bold">{lang.canSpeak ? "✓" : "-"}</td>
-                        <td className="px-3 py-2 text-right">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setPersonalDetails({
-                                ...personalDetails,
-                                languages: personalDetails.languages?.filter((_, index) => index !== i),
-                              });
-                            }}
-                            className="text-slate-400 hover:text-rose-500 p-0.5"
-                          >
-                            <Trash2 className="w-3.5 h-3.5 inline" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="text-[11px] text-slate-400 italic">No languages added yet.</p>
-            )}
-          </div>
-        </div>
-      </div>
+      {/* 11. CAREER PROFILE & PERSONAL DETAILS */}
+      <ProfilePersonal
+        careerProfile={careerProfile}
+        onEditCareer={() => {
+          setEditCareerData({ ...careerProfile });
+          setActiveModal("career");
+        }}
+        personalDetails={personalDetails}
+        onEditPersonal={() => {
+          setEditPersonalData({ ...personalDetails });
+          setActiveModal("personal");
+        }}
+        onOpenAddLanguage={() => {
+          setNewLangData({ language: "", proficiency: "Proficient", canRead: true, canWrite: true, canSpeak: true });
+          setActiveModal("language");
+        }}
+        onDeleteLanguage={(idx) => {
+          setPersonalDetails({
+            ...personalDetails,
+            languages: personalDetails.languages?.filter((_, index) => index !== idx),
+          });
+        }}
+      />
 
       {/* ========================================================
           MODALS / EDIT DRAWERS FOR SECTIONS
